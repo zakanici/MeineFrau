@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Für meine Nicole</title>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      font-family: 'Alex Brush', cursive;
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      background-color: #fff0f5;
+      color: #333;
+      overflow-x: hidden;
+      text-align: center;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe6f2 100%);
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 3.5em;
+      margin: 30px 0;
+      color: #1e6fa8;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .subtitle {
+      font-size: 1.8em;
+      color: #4a90e2;
+      margin: -20px 0 40px 0;
+      font-style: italic;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+      margin: 30px auto;
+      max-width: 900px;
+      padding: 20px;
+    }
+
+    /* Briefumschlag */
+    .envelope {
+      width: 180px;
+      height: 140px;
+      position: relative;
+      cursor: pointer;
+      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.15));
+      transition: all 0.4s ease;
+    }
+
+    .envelope:hover {
+      transform: translateY(-10px) scale(1.05);
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2));
+    }
+
+    .envelope-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .envelope-front {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      border-radius: 5px;
+      z-index: 2;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .envelope-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      border-radius: 5px;
+      z-index: 1;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      width: 100%;
+      height: 50%;
+      background: inherit;
+      border-radius: 5px 5px 0 0;
+      transform-origin: top;
+      z-index: 3;
+      transition: transform 0.6s ease;
+    }
+
+    .envelope-seal {
+      position: absolute;
+      width: 35px;
+      height: 35px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #1e6fa8;
+      z-index: 4;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .envelope-label {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      top: 75%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 1.5em;
+      z-index: 5;
+      text-shadow: 0 0 8px rgba(0,0,0,0.4);
+    }
+
+    /* Blaue Farben */
+    .envelope-1 { background: linear-gradient(135deg, #87CEEB 0%, #5AA9E6 100%); }
+    .envelope-2 { background: linear-gradient(135deg, #6CB4EE 0%, #318CE7 100%); }
+    .envelope-3 { background: linear-gradient(135deg, #4A90E2 0%, #1E6FA8 100%); }
+    .envelope-4 { background: linear-gradient(135deg, #318CE7 0%, #0056B3 100%); }
+    .envelope-5 { 
+      background: linear-gradient(135deg, #1E6FA8 0%, #003366 100%); 
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+
+    /* Geöffneter Brief */
+    .letter-opened {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90vw;
+      max-width: 700px;
+      min-height: 70vh;
+      max-height: 85vh;
+      background: #f8fbff;
+      border-radius: 15px;
+      box-shadow: 0 40px 80px rgba(30, 111, 168, 0.3);
+      padding: 40px 30px 30px 40px;
+      z-index: 100;
+      opacity: 0;
+      display: none;
+      overflow-y: auto;
+      animation: unfoldLetter 0.8s ease forwards;
+      border: 2px solid rgba(74, 144, 226, 0.3);
+    }
+
+    /* Bild im Brief */
+    .letter-image {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      width: 180px;
+      height: 135px;
+      object-fit: cover;
+      border-radius: 8px;
+      transform: rotate(-15deg);
+      box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.25);
+      border: 6px solid white;
+      z-index: 1;
+    }
+
+    /* Brief Hintergründe */
+    .letter-bg-1 { background: #e6f2ff; }
+    .letter-bg-2 { background: #d4e7ff; }
+    .letter-bg-3 { background: #c2dcff; }
+    .letter-bg-4 { background: #b0d1ff; }
+    .letter-bg-5 { background: #9ec6ff; }
+
+    @keyframes unfoldLetter {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    .letter-content {
+      font-size: 1.5em;
+      line-height: 1.7;
+      color: #1e3a5f;
+      text-align: justify;
+      padding: 25px;
+      padding-left: 220px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      white-space: pre-line;
+      position: relative;
+      z-index: 2;
+      min-height: 300px;
+    }
+
+    .letter-title {
+      font-size: 2.5em;
+      text-align: center;
+      margin: 0 0 25px 200px;
+      color: #1e6fa8;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(74, 144, 226, 0.4);
+    }
+
+    .letter-signature {
+      text-align: right;
+      margin-top: 30px;
+      font-size: 1.5em;
+      color: #4A90E2;
+      font-style: italic;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      background-color: #4A90E2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 101;
+      border: none;
+    }
+
+    .close-btn::before, .close-btn::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 2px;
+      background-color: white;
+    }
+
+    .close-btn::before { transform: rotate(45deg); }
+    .close-btn::after { transform: rotate(-45deg); }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 240, 245, 0.95);
+      z-index: 99;
+      display: none;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Passwort Modal */
+    .password-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      z-index: 102;
+      display: none;
+      text-align: center;
+      width: 90%;
+      max-width: 450px;
+      border: 3px solid #4A90E2;
+    }
+
+    .password-title {
+      font-size: 2.2em;
+      color: #1e6fa8;
+      margin-bottom: 10px;
+    }
+
+    .password-question {
+      font-size: 1.6em;
+      color: #333;
+      margin-bottom: 25px;
+      font-style: italic;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 15px;
+      margin: 20px 0;
+      font-size: 1.4em;
+      border: 2px solid #4A90E2;
+      border-radius: 10px;
+      text-align: center;
+      font-family: 'Alex Brush', cursive;
+      background-color: #f8fbff;
+      transition: all 0.3s;
+    }
+
+    .password-input:focus {
+      outline: none;
+      border-color: #1E6FA8;
+      box-shadow: 0 0 10px rgba(30, 111, 168, 0.3);
+    }
+
+    .password-submit {
+      background: linear-gradient(135deg, #4A90E2 0%, #1E6FA8 100%);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.5em;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .password-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(30, 111, 168, 0.3);
+    }
+
+    .password-hint {
+      font-size: 1.2em;
+      color: #666;
+      margin-top: 20px;
+      font-style: italic;
+    }
+
+    /* Fehler Animation */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+      20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+
+    .shake {
+      animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    body.letter-open {
+      overflow: hidden;
+    }
+
+    body.letter-open .container,
+    body.letter-open h1,
+    body.letter-open .subtitle {
+      filter: blur(3px);
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .container { gap: 20px; padding: 15px; }
+      .envelope { width: 160px; height: 120px; }
+      h1 { font-size: 2.8em; }
+      .subtitle { font-size: 1.5em; }
+      .letter-opened { width: 95vw; padding: 30px 20px 20px 20px; }
+      .letter-content { 
+        font-size: 1.3em; 
+        padding: 20px; 
+        padding-top: 180px;
+        padding-left: 20px;
+      }
+      .letter-title { 
+        font-size: 2em; 
+        margin: 0 0 20px 0;
+        text-align: center;
+      }
+      .letter-image {
+        width: 150px;
+        height: 120px;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-15deg);
+      }
+      .password-modal {
+        padding: 30px 20px;
+        width: 95%;
+      }
+      .password-title {
+        font-size: 1.8em;
+      }
+      .password-question {
+        font-size: 1.4em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Meine Geliebte Nicole</h1>
+  <div class="subtitle">Fünf Briefe für fünf Ewigkeiten</div>
+
+  <div class="container">
+    <div class="envelope envelope-1" onclick="openLetter(1, 'Mein Herz', `Ich rede nicht oft genug darüber, wie sehr ich deine Augen liebe.
+Meistens starre ich sie nur an und bewundere dich.
+Zwar merke ich, dass du dich ab und zu beobachtet fühlst, aber ich kann wirklich nichts dafür. Ich fühle mich derartig angezogen, dass ich es machen muss.
+
+Ich fühle eine andere Art von Ruhe im Herzen, wenn ich dir in die Augen schaue und merke, dass alles in Ordnung ist.
+Die Schönheit basiert nicht nur auf dem Aussehen, sondern auch darauf, welche Emotionen man fühlt, wenn man etwas Schönes betrachtet.
+
+Ich kann es nur schwer in Worte fassen, es ist etwas, das man nicht erklären kann. Ich spüre nur, wie meine Herzschläge langsamer werden und ich mich entspanne. Ich habe dann immer das Gefühl, alles ist in Ordnung, dass jegliche Probleme im Leben nicht so schlimm sind, solange ich dich bei mir habe.
+
+Ich glaube, ich könnte das grob als Glücklichkeit beschreiben. Dennernoch ist es viel mehr als Glücklichkeit. Es ist eine Mischung aus Liebe, Zufriedenheit, innerer Ruhe, Vertrauen und Aufregung.
+
+Ich wünsche mir von Herzen, dass ich jeden Tag aufstehen kann und dir in die Augen schauen kann, während ich dir sage, wie sehr ich dich liebe.
+Das bedeutet mir sehr viel, mein Herz, ich liebe dich.
+
+Ich liebe es auch, wie du mich anschaust, voller Liebe in deinen Augen.
+Augen, die mich so sehen, wie ich bin.
+Augen, die meine guten Seiten bewundern.
+Augen, die meine schlechten Seiten ignorieren.
+Augen, die mich lieben.
+
+Du bist wirklich etwas Besonderes, Nicole, du bist meine Frau. Und ich werde dich für immer lieben.`)">
+      <div class="envelope-inner">
+        <div class="envelope-back"></div>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal">♥</div>
+        <div class="envelope-label">Mein Herz</div>
+      </div>
+    </div>
+
+    <div class="envelope envelope-2" onclick="openLetter(2, 'Mein Leben', `Nicole,
+ich denke jeden Tag über meine Entscheidungen nach. Ich kann das nicht kontrollieren. Oft bereue ich meine Taten und Entscheidungen und denke darüber nach, was ich besser machen könnte.
+
+Ich denke auch täglich über dich, über uns, über unsere frühe Entscheidung.
+Und ich bereue keine Sekunde. Keine Entscheidung. Nichts.
+Es hat sich nicht voreilig angefühlt, ich habe in keinem Moment das Gefühl gehabt, ich begehe eine Fehlentscheidung.
+
+Jede Sekunde, die ich mit dir verbringe, fühlt sich an wie ein Traum, und jede Sekunde, in der ich nicht bei dir bin, fühlt sich leer an, als ob ein Teil meines Herzens fehlen würde.
+
+Ich bin kein Mensch, der gerne Emotionen zeigt, aber mit dir kommen sie von alleine.
+
+Du sagst oft, ich behandle dich wie meine Nichten oder dass mein Verhalten sich ähnelt, wenn ich mit dir bin.
+Das habe ich auch bemerkt. Für mich ist das aber das reinste Anzeichen von Liebe. Ich liebe dich so, wie ich meine Familie liebe, weil du jetzt auch Teil meiner Familie bist.
+
+Mag sein, dass es sich etwas kindisch anfühlt, aber für mich ist das etwas sehr Besonderes. Ich bin bereit, dir meine kindische Seite zu zeigen.
+Du bist die einzige Person, mit der ich mich wohl genug fühle, um mich so zu benehmen, weil ich dich liebe.
+
+Ich liebe dich sehr, mein Herz.
+
+Ich glaube nicht an Zufälle, ich bin mir sicher, dass alles maqṭūb war, denn niemand könnte unsere Herzen so verbinden außer Allah.
+Und falls wir uns im Jannah wiedersehen und ich alles vergessen habe, dann werde ich dich wiederfinden und mich wieder in dich verlieben, weil unsere Herzen füreinander bestimmt sind. Egal, wie weit wir auseinander sind oder wie viel Zeit vergeht.
+
+Ich liebe dich jetzt, ich werde dich den Rest meines Lebens lieben, und wenn wir sterben und wiederauferstehen, werde ich dich weiter lieben. Denn ich liebe dich für Allah, und das schwöre ich bei Allah.
+
+Ich kann manchmal etwas anstrengend sein, aber das liegt nur daran, dass ich dich liebe.
+Dennoch verspreche ich, dass ich mein Bestes geben werde. Weil du die einzige Person bist, mit der ich den Rest meines Lebens verbringen will.`)">
+      <div class="envelope-inner">
+        <div class="envelope-back"></div>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal">♥</div>
+        <div class="envelope-label">Mein Leben</div>
+      </div>
+    </div>
+
+    <div class="envelope envelope-3" onclick="openLetter(3, 'Meine Frau', `Unsere gemeinsame Zukunft ist jetzt eine Realität.
+Wir haben beide unsere Versprechen gehalten und haben es geschafft.
+Wir sind verheiratet.
+Ich habe das Gefühl, ich lebe noch in einem Traum.
+Du bist alles, was ich mir je gewünscht habe, mein Schatz.
+Meine Duas wurden angenommen, und Allah hat mir die beste Frau für mich geschickt – eine Frau, mit der ich mein Leben verbringen kann.
+Ich kann es nicht mehr abwarten, endlich mit dir zusammenzuziehen. Dich täglich zu sehen. Jeden Morgen gemeinsam zu verbringen. Zusammen Kaffee trinken, miteinander reden, miteinander leben.
+Ich freue mich auf die Tage, an denen wir gemeinsam aufwachen und zusammen schlafen gehen können.
+Ich freue mich darauf, eine Familie mit dir zu gründen.
+Auf unsere Baby-Katzen.
+Auf unsere Serien.
+Auf unsere Bücher.
+Vor allem freue ich mich auf unsere Kinder, Inschallah.
+Ich will so gerne Kinder mit dir kriegen, auch wenn die Zeit fürs Erste nicht passend ist.
+Ich kann aber nicht aufhören, darüber nachzudenken, denn ich bin so dankbar, dich zu haben.
+Ich könnte mir keine bessere Ehefrau und keine bessere Mutter unserer Kinder wünschen.
+Irgendwie bin ich mir zu 100 % sicher, dass du eine tolle Mutter sein wirst. Dass du sie gut erziehen wirst (gemeinsam mit mir).
+Ich bin so froh darüber, dass wir die gleiche Mentalität haben, was Erziehung angeht.
+Dass wir ähnlich leben wollen.
+Dass wir dieselben Ziele verfolgen – nicht nur im Diesseits, sondern auch im Jenseits.
+Ich bin so glücklich mit dir.
+Inschallah können wir bald mit unserem Leben starten.`)">
+      <div class="envelope-inner">
+        <div class="envelope-back"></div>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal">♥</div>
+        <div class="envelope-label">Meine Frau</div>
+      </div>
+    </div>
+
+    <div class="envelope envelope-4" onclick="openLetter(4, 'Mein Schatz', `Egal wie oft ich dich anschaue, ich kann meinen Augen nicht trauen.
+So wunderschön wie der Mond in einer unbewölkten Nacht im Sommer.
+So süß wie ein Welpe, der durch die Wiese hüpft.
+So hübsch – hübscher als alles, was ich je betrachtet habe.
+Und wenn ich irgendwann einmal am Sterben bin, dann werde ich Allah danken, denn ER hat mir die Augen gegeben, mit denen ich die schönste Seiner Schöpfungen betrachten durfte.
+Und wenn ich dich nicht sehen kann, dann will ich nichts mehr sehen.
+Ich könnte in keiner Welt leben, in der ich nachts ohne dich schlafen müsste.
+Ohne deine Gute-Nacht.
+Ohne deine Umarmung.
+Ohne deine Liebe.
+Deine Nähe ist der Grund für meine Glücklichkeit, und die Entfernung zwischen uns ist eine riesige Belastung – eine Belastung wie die von Atlas aus der griechischen Mythologie.
+Ich lebe mit der Angst, mit dir Museen zu besichtigen, denn wer würde mich gehen lassen, wenn sie sehen, dass ich ein solches Kunstwerk wie dich mitnehme?
+Ich liebe dich.
+Ich liebe dich auf eine Art, die man nicht einmal beschreiben kann.
+Diese Liebe hat sich zu einer Obsession entwickelt.
+Irgendetwas in mir bewegt mich dazu, nach deiner Glücklichkeit zu streben.
+Ich bin bereit, alles dafür zu tun.
+Oft denke ich darüber nach, wie ich dich beschreiben würde, wenn ich blind wäre.
+Ich glaube, die einzige richtige Antwort darauf wäre: wie eine Flamme.
+Eine Flamme, die die Kälte meines Herzens erwärmt.
+Eine Flamme, die die Dunkelheit der Zukunft beleuchtet und mir den Weg zeigt.
+Eine Flamme, die jegliches Ungute von mir fernhält.
+Eine Flamme, die nicht mit materiellen Dingen am Leben bleibt, sondern Liebe als Hauptbrennstoff hat.
+Meine Prioritäten sind mir sehr wichtig, aber seitdem ich dich kenne, ist mir alles andere egal.
+Ich brauche dich.
+Deine Nähe.
+Deine Glücklichkeit.
+Deine Liebe.
+Ich liebe dich, mein Schatz, mehr als du dir vorstellen kannst.
+Möge Allah unsere Liebe segnen und uns ein glückliches Leben schenken, voller Zufriedenheit miteinander und auf der Seite Allahs.
+Amin.`)">
+      <div class="envelope-inner">
+        <div class="envelope-back"></div>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal">♥</div>
+        <div class="envelope-label">Mein Schatz</div>
+      </div>
+    </div>
+
+    <!-- Spezieller Umschlag für den letzten Brief mit Passwort -->
+    <div class="envelope envelope-5" onclick="showPasswordModal()">
+      <div class="envelope-inner">
+        <div class="envelope-back"></div>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal"><i class="fas fa-lock"></i></div>
+        <div class="envelope-label">Meine</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="letter-opened" id="openedLetter">
+    <div class="close-btn" onclick="closeLetter()"></div>
+    <h2 class="letter-title" id="letterTitle"></h2>
+    <div class="letter-content" id="letterText"></div>
+    <div class="letter-signature" id="letterSignature"></div>
+  </div>
+
+  <!-- Passwort Modal -->
+  <div class="password-modal" id="passwordModal">
+    <div class="password-title">🔒 Geheimer Brief</div>
+    <div class="password-question">Der wichtigste Tag unseres Lebens?</div>
+    <input type="password" class="password-input" id="passwordInput" placeholder="TT.MM.JJJJ">
+    <button class="password-submit" onclick="checkPassword()">Öffnen</button>
+    <div class="password-hint">Format: TT.MM.JJJJ</div>
+  </div>
+
+  <script>
+    // Bild-URLs für jeden Brief (hier änderst du deine Bildnamen)
+    const images = {
+      1: 'bild-herz.jpg',    // Bild für "Mein Herz"
+      2: 'bild-leben.jpg',   // Bild für "Mein Leben"
+      3: 'bild-frau.jpg',    // Bild für "Meine Frau"
+      4: 'bild-schatz.jpg',  // Bild für "Mein Schatz"
+      5: 'bild-meine.jpg'    // Bild für "Meine"
+    };
+
+    // Dein expliziter Text für "Meine"
+    const secretText = `Alle Männer mögen Sex, das ist in unserer Natur.
+Ich mag es besonders und brauche es besonders oft.
+Ein Teil der Schuld trägst aber auch du:
+Mit deinen schönen Lippen,
+Deinem perfekten Arsch,
+Deinen schönen Brüsten.
+DU machst mich extrem horny.
+
+Ich habe ständig den Drang, dich zu ficken.
+Ich denke ständig darüber nach,
+wie gerne ich dich ficken würde,
+wie gerne ich dich gegen die Wand drücken würde,
+wie gerne ich meine Hand um deinen Hals haben
+und drücken würde 
+hart
+sehr hart ,
+während ich nah zu dir komme
+und dir sage, was für eine geile Schlampe du bist.
+
+Ich liebe es, zu hören, wie du stöhnst,
+während ich ihn reinstecke,
+tief.
+Ich will hören, wie deine Atmung sich beschleunigt,
+wie deine Beine zittern, während ich deine Brüste küsse.
+
+Ich möchte dich hochtragen und auf den Tisch legen,
+deine Lippen küssen,
+dann deinen Hals,
+dann deine Brüste,
+dann deinen Bauch.
+Und während du merkst, dass ich tiefer gehe,
+kannst du dich nicht zusammenreißen.
+Deine Atmung wird unregelmäßig,
+während ich immer tiefer gehe,
+langsam.
+Du spürst, wie meine Zunge deinen Körper berührt,
+wie die Luft um dich herum wärmer wird.
+
+Und wenn ich wieder hochkomme, spürst du meinen Schwanz zwischen deinen Beinen.
+Ich berühre dich damit, während ich dir in die Augen schaue.
+Langsam geht er rein,
+tiefer,
+immer tiefer.
+Alles wird schneller, während ich ihn raushole
+und wieder reinstecke
+Du spürst, wie sich der Tisch wackelt, während ich meinen Arm um deine Hüfte lege
+und deine Arme mit meiner Hand festhalte.
+Alles wird intensiver.
+
+Ich hebe dich hoch, während mein Schwanz noch drin ist.
+Deine Beine sind um mich geschlungen.
+Du spürst jeden Stoß, während du zum Höhepunkt kommst,
+aber ich mache immer weiter,
+während ich dich küsse
+und dir sage, dass du mir gehörst,
+dass du meine Schlampe bist 
+MEINE.
+Niemand außer mir darf dich anfassen.
+Du bist dafür da, meine Aggressivität an dir auszulassen,
+während ich dich hart ficke 
+härter, als du es dir vorstellen kannst.`;
+
+    let currentLetterNumber = 5;
+
+    function openLetter(number, title, text) {
+      const letter = document.getElementById('openedLetter');
+      
+      // Entferne alle Bild-Container falls vorhanden
+      const existingImage = document.querySelector('.letter-image');
+      if (existingImage) {
+        existingImage.remove();
+      }
+      
+      // Setze Brief-Hintergrund
+      letter.className = 'letter-opened';
+      letter.classList.add('letter-bg-' + number);
+      
+      // Setze Titel und Text
+      document.getElementById('letterTitle').textContent = title;
+      document.getElementById('letterText').innerHTML = text;
+      
+      // Setze Unterschrift
+      let signature = '';
+      if (title === 'Mein Herz') signature = 'Dein dich liebendes Herz';
+      else if (title === 'Mein Leben') signature = 'Für immer dein';
+      else if (title === 'Meine Frau') signature = 'Dein Ehemann';
+      else if (title === 'Mein Schatz') signature = 'Dein Schatz';
+      else if (title === 'Meine') signature = 'Deiner';
+      document.getElementById('letterSignature').textContent = signature;
+      
+      // Füge Bild hinzu
+      const img = new Image();
+      img.src = images[number];
+      img.alt = title;
+      img.className = 'letter-image';
+      
+      // Falls Bild nicht geladen wird
+      img.onerror = function() {
+        // Erstelle einen Platzhalter
+        const placeholder = document.createElement('div');
+        placeholder.className = 'letter-image';
+        placeholder.style.background = 'linear-gradient(135deg, #87CEEB 0%, #5AA9E6 100%)';
+        placeholder.style.display = 'flex';
+        placeholder.style.alignItems = 'center';
+        placeholder.style.justifyContent = 'center';
+        placeholder.style.color = 'white';
+        placeholder.style.fontSize = '1.2em';
+        placeholder.textContent = 'Dein Bild';
+        letter.appendChild(placeholder);
+      };
+      
+      // Wenn Bild geladen wird
+      img.onload = function() {
+        letter.appendChild(img);
+      };
+      
+      // Brief anzeigen
+      document.body.classList.add('letter-open');
+      document.getElementById('overlay').style.display = 'block';
+      letter.style.display = 'block';
+      
+      // Umschlag-Animation
+      const envelope = document.querySelector('.envelope-' + number);
+      const flap = envelope.querySelector('.envelope-flap');
+      flap.style.transform = 'rotateX(180deg)';
+    }
+
+    function showPasswordModal() {
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('passwordModal').style.display = 'block';
+      document.getElementById('passwordInput').focus();
+    }
+
+    function checkPassword() {
+      const password = document.getElementById('passwordInput').value;
+      const correctPassword = "15.11.2025";
+      
+      if (password === correctPassword) {
+        // Passwort korrekt - öffne den geheimen Brief
+        document.getElementById('passwordModal').style.display = 'none';
+        document.getElementById('passwordInput').value = '';
+        
+        // Öffne den geheimen Brief
+        openLetter(currentLetterNumber, 'Meine', secretText);
+      } else {
+        // Passwort falsch
+        document.body.classList.add('shake');
+        setTimeout(() => {
+          document.body.classList.remove('shake');
+        }, 500);
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('passwordInput').placeholder = "Falsches Datum! Versuche es erneut";
+      }
+    }
+
+    function closeLetter() {
+      document.body.classList.remove('letter-open');
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('openedLetter').style.display = 'none';
+      document.getElementById('passwordModal').style.display = 'none';
+      
+      // Alle Umschläge zurücksetzen
+      document.querySelectorAll('.envelope-flap').forEach(flap => {
+        flap.style.transform = 'rotateX(0deg)';
+      });
+      
+      // Entferne Bild
+      const img = document.querySelector('.letter-image');
+      if (img) img.remove();
+    }
+
+    document.getElementById('overlay').addEventListener('click', closeLetter);
+    
+    // Escape-Taste
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLetter();
+    });
+
+    // Enter-Taste für Passworteingabe
+    document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+  </script>
+</body>
+</html>
